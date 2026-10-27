@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f7fb" />
+    <meta name="description" content="Design, preview, save and print a house plan." />
+    <title>Planform — House planner</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#" aria-label="Planform home">
+          <span class="brand-mark" aria-hidden="true">⌂</span>
+          <span>planform<span class="brand-dot">.</span></span>
+        </a>
+
+        <div class="project-name">
+          <span class="section-kicker">YOUR PROJECT</span>
+          <label for="projectName">Project name</label>
+          <input id="projectName" type="text" value="My new home" maxlength="60" />
+        </div>
+
+        <section class="panel planner-panel">
+          <div class="section-heading">
+            <span class="heading-icon" aria-hidden="true">✦</span>
+            <div>
+              <span class="section-kicker">QUICK START</span>
+              <h2>Plan generator</h2>
+            </div>
+          </div>
+          <label for="groundArea">Target floor area <span>m²</span></label>
+          <input id="groundArea" type="number" min="40" max="5000" step="5" value="180" />
+          <div class="input-pair">
+            <div>
+              <label for="bedroomCount">Bedrooms</label>
+              <input id="bedroomCount" type="number" min="1" max="6" value="3" />
+            </div>
+            <div>
+              <label for="bathroomCount">Bathrooms</label>
+              <input id="bathroomCount" type="number" min="1" max="5" value="2" />
+            </div>
+          </div>
+          <label for="designStyle">Design style</label>
+          <select id="designStyle">
+            <option value="urban">Modern urban</option>
+            <option value="rural">Rural / country</option>
+          </select>
+          <label for="buildingType">Building type</label>
+          <select id="buildingType">
+            <option value="house">House</option>
+            <option value="highrise">Tall building / apartments</option>
+          </select>
+          <label for="roofStyle">Roof design</label>
+          <select id="roofStyle">
+            <option value="auto">Automatic · match design</option>
+            <option value="flat">Flat roof</option>
+            <option value="gable">Gable roof</option>
+            <option value="hip">Hip roof</option>
+          </select>
+          <div class="input-pair">
+            <div>
+              <label for="floorCount">Storeys</label>
+              <input id="floorCount" type="number" min="1" max="30" value="1" />
+            </div>
+            <div>
+              <label for="wallHeight">Wall height · m</label>
+              <input id="wallHeight" type="number" min="2" max="6" step="0.1" value="2.8" />
+            </div>
+          </div>
+          <button id="generatePlan" class="button button-primary button-wide">
+            <span aria-hidden="true">✦</span> Generate a floor plan
+          </button>
+          <p id="presetDescription" class="helper-text">Modern urban: compact rooms and an open-plan living area. Select multiple storeys for a multi-level home.</p>
+        </section>
+
+        <section class="panel tools-panel">
+          <div class="panel-title-row">
+            <h2>Drawing tools</h2>
+            <span class="shortcut-hint">2D only</span>
+          </div>
+          <div class="tool-group" role="group" aria-label="Drawing tools">
+            <button class="tool-button active" data-tool="wall" title="Drag to draw a wall">
+              <span class="tool-icon" aria-hidden="true">／</span> Wall
+            </button>
+            <button class="tool-button" data-tool="room" title="Drag to draw a room">
+              <span class="tool-icon" aria-hidden="true">▱</span> Room
+            </button>
+            <button class="tool-button" data-tool="door" title="Click near a room edge to place a door">
+              <span class="tool-icon" aria-hidden="true">⌑</span> Door
+            </button>
+            <button class="tool-button" data-tool="window" title="Click near a room edge to place a window">
+              <span class="tool-icon" aria-hidden="true">▥</span> Window
+            </button>
+            <button class="tool-button" data-tool="label" title="Click to add a label">
+              <span class="tool-icon" aria-hidden="true">T</span> Label
+            </button>
+            <button class="tool-button" data-tool="erase" title="Click an item to remove it">
+              <span class="tool-icon" aria-hidden="true">⌫</span> Erase
+            </button>
+          </div>
+          <label class="range-label" for="snapSize"><span>Grid snap</span><strong id="snapValue">15 px</strong></label>
+          <input id="snapSize" type="range" min="5" max="50" step="5" value="15" />
+        </section>
+
+        <section class="panel history-panel">
+          <div class="panel-title-row">
+            <h2>Edit history</h2>
+            <span class="shortcut-hint">Ctrl Z / Ctrl Y</span>
+          </div>
+          <div class="history-buttons">
+            <button id="undoButton" class="button button-subtle" disabled>↶ <span>Undo</span></button>
+            <button id="redoButton" class="button button-subtle" disabled>↷ <span>Redo</span></button>
+          </div>
+        </section>
+
+        <section class="panel estimate-panel">
+          <div class="panel-title-row">
+            <h2>Plan summary</h2>
+            <span class="estimate-badge">ESTIMATE</span>
+          </div>
+          <div id="materialResults" class="summary-grid" aria-live="polite"></div>
+          <p class="helper-text">Conceptual quantities only—not a construction or engineering estimate.</p>
+        </section>
+
+        <div class="sidebar-footer">
+          <span class="save-indicator"><i aria-hidden="true"></i> <span id="saveStatus">Saved on this device</span></span>
+          <p>For early planning and visualization. Have a qualified professional review plans before construction.</p>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="workspace-header">
+          <div class="workspace-title">
+            <span class="section-kicker">HOME DESIGN STUDIO</span>
+            <h1 id="workspaceProjectName">My new home</h1>
+          </div>
+          <div class="header-actions">
+            <button id="importPlan" class="button button-quiet" title="Open a saved plan">Open</button>
+            <input id="importFile" type="file" accept=".json,application/json" hidden />
+            <button id="savePlan" class="button button-quiet" title="Download a backup of this plan">Save</button>
+            <span class="header-divider" aria-hidden="true"></span>
+            <button id="printPlan" class="button button-quiet">Print</button>
+            <button id="exportSvg" class="button button-primary">Export SVG</button>
+          </div>
+        </header>
+
+        <section class="drawing-card" aria-label="Plan workspace">
+          <div class="drawing-toolbar">
+            <div class="view-switcher" role="group" aria-label="Plan view">
+              <button class="view-btn active" data-view="2d">2D plan</button>
+              <button class="view-btn" data-view="top">Top</button>
+              <button class="view-btn" data-view="front">Front</button>
+              <button class="view-btn" data-view="side">Side</button>
+              <button class="view-btn" data-view="isometric">3D isometric</button>
+            </div>
+            <div class="canvas-actions">
+              <button id="zoomOut" class="icon-button" title="Zoom out" aria-label="Zoom out">−</button>
+              <span id="zoomValue">100%</span>
+              <button id="zoomIn" class="icon-button" title="Zoom in" aria-label="Zoom in">+</button>
+              <button id="fitPlan" class="button button-quiet fit-button" title="Fit plan to view">Fit</button>
+              <span class="header-divider" aria-hidden="true"></span>
+              <button id="clearCanvas" class="button button-danger-quiet">Clear plan</button>
+            </div>
+          </div>
+
+          <div id="floorTabs" class="floor-tabs" role="group" aria-label="Select floor" hidden></div>
+          <div class="canvas-wrap">
+            <svg id="planCanvas" viewBox="0 0 1100 750" aria-label="House plan drawing canvas" role="img"></svg>
+            <div class="canvas-legend" aria-live="polite">
+              <span class="legend-dot"></span>
+              <span id="canvasHint">Drag to draw walls · Hold and drag to create rooms</span>
+            </div>
+          </div>
+          <footer class="drawing-footer">
+            <span id="planStats">0 rooms <span>·</span> 0 m²</span>
+            <span id="viewCaption">Floor plan <span>·</span> 1 px = 0.03 m</span>
+          </footer>
+        </section>
+
+        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+      </main>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
